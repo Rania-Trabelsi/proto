@@ -17,37 +17,42 @@ public class IcsParser {
         List<Event> events = new ArrayList<>();
         String line;
         Event event = null;
+        String previousLine = null; // Ajouté pour conserver la ligne précédente
 
         while ((line = reader.readLine()) != null) {
             if (line.startsWith("BEGIN:VEVENT")) {
                 event = new Event(null, null, null, null, null, null, null);
             } else if (line.startsWith("SUMMARY")) {
-                // Extraction améliorée pour SUMMARY
                 String summary = line.substring(line.indexOf(":") + 1);
                 String[] details = summary.split(" - ");
                 if (details.length >= 3) {
                     event.setSubject(details[0].trim());
                     event.setTeacher(details[1].trim());
-                    // Utiliser la partie après le dernier " - " comme groupe
                     event.setGroup(details[details.length - 1].trim().replaceAll("\\\\", ""));
                 }
             } else if (line.startsWith("LOCATION")) {
+                // Extraction des deux caractères précédents comme "type"
+                if (previousLine != null && previousLine.length() >= 2) {
+                    String potentialType = previousLine.substring(previousLine.length() - 2);
+                    if (potentialType.matches("[A-Za-z]{2}")) { // Vérifie si les deux derniers caractères sont alphabétiques
+                        event.setType(potentialType);
+                    }
+                }
                 event.setRoom(line.substring(line.indexOf(":") + 1).trim());
             } else if (line.startsWith("DTSTART")) {
                 event.setStartDateTime(parseDateTime(line.substring(line.indexOf(":") + 1)));
             } else if (line.startsWith("DTEND")) {
                 event.setEndDateTime(parseDateTime(line.substring(line.indexOf(":") + 1)));
             } else if (line.startsWith("DESCRIPTION")) {
-                // Parse DESCRIPTION pour Type et d'autres détails
-                String description = line.substring(line.indexOf(":") + 1).trim().replace("\\n", "");
-                // Extrait le type de l'événement
-                if (description.contains("Type :")) {
-                    String type = description.substring(description.indexOf("Type :")).trim();
-                    event.setType(type.split("\n")[0]); // Assurez-vous de ne capturer que la première ligne après "Type :"
-                }
-            } else if (line.startsWith("END:VEVENT")) {
+
+            }
+            // Mise à jour de la ligne précédente à la fin de la boucle
+            previousLine = line;
+
+            if (line.startsWith("END:VEVENT")) {
                 events.add(event);
                 event = null;
+                previousLine = null; // Réinitialiser la ligne précédente pour le prochain événement
             }
         }
         reader.close();
