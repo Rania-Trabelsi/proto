@@ -1,6 +1,7 @@
 package com.example.proto;
 
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -16,8 +17,10 @@ import java.util.*;
 
 public class Controller {
 
-    boolean isDarkTheme = false;
 
+    @FXML
+    private Button themeToggleButton; // Bouton pour basculer le thème
+    private boolean isDarkTheme = false; // Flag pour suivre le thème actuel
     @FXML
     private Button previousWeekButton;
 
@@ -45,7 +48,20 @@ public class Controller {
         }
     }
 
+    public void toggleTheme() {
+        Scene scene = themeToggleButton.getScene();
+        scene.getStylesheets().clear();
 
+        if (isDarkTheme) {
+            scene.getStylesheets().add(getClass().getResource("/light-theme.css").toExternalForm());
+            themeToggleButton.setText("Passer au mode sombre");
+            isDarkTheme = false;
+        } else {
+            scene.getStylesheets().add(getClass().getResource("/dark-theme.css").toExternalForm());
+            themeToggleButton.setText("Passer au mode clair");
+            isDarkTheme = true;
+        }
+    }
     String urlString = "https://edt-api.univ-avignon.fr/api/exportAgenda/tdoption/def502009db4cc18c89d1c0f782ad7" +
             "dc1b2317d1b866e9b368292e2a5046d898d796146e873142f21aff63fbf54104ed9d2841c2377ab77f27c8d24d53d7999c5a3d" +
             "55a76fdf89c9c4c6e4f1041c98d55a078b4c84cd3987d1e3264a45";
