@@ -3,59 +3,64 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.*?>
 
-<VBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.example.proto.Controller">
-    <Button text="Semaine précédente" onAction="#previousWeekClicked"/>
-    <Button text="Semaine suivante" onAction="#nextWeekClicked"/>
-    <ComboBox fx:id="roomComboBoxSalle" promptText="Choisir une salle"/>
-    <ComboBox fx:id="roomComboBoxProfs" promptText="Choisir un prof"/>
-
-    <GridPane fx:id="scheduleGrid">
-        <padding>
-            <Insets top="20" right="20" bottom="20" left="20"/>
-        </padding>
-        <columnConstraints>
-            <ColumnConstraints percentWidth="16.6666666667" hgrow="SOMETIMES" />
-            <ColumnConstraints percentWidth="16.6666666667" hgrow="SOMETIMES" />
-            <ColumnConstraints percentWidth="16.6666666667" hgrow="SOMETIMES" />
-            <ColumnConstraints percentWidth="16.6666666667" hgrow="SOMETIMES" />
-            <ColumnConstraints percentWidth="16.6666666667" hgrow="SOMETIMES" />
-            <ColumnConstraints percentWidth="16.6666666667" hgrow="SOMETIMES" />
-        </columnConstraints>
-        <rowConstraints>
-            <RowConstraints percentHeight="4.16666666667"/>
-            <RowConstraints percentHeight="4.16666666667"/>
-            <RowConstraints percentHeight="4.16666666667"/>
-            <RowConstraints percentHeight="4.16666666667"/>
-            <RowConstraints percentHeight="4.16666666667"/>
-            <RowConstraints percentHeight="4.16666666667"/>
-            <RowConstraints percentHeight="4.16666666667"/>
-            <RowConstraints percentHeight="4.16666666667"/>
-            <RowConstraints percentHeight="4.16666666667"/>
-            <RowConstraints percentHeight="4.16666666667"/>
-            <RowConstraints percentHeight="4.16666666667"/>
-            <RowConstraints percentHeight="4.16666666667"/>
-            <RowConstraints percentHeight="4.16666666667"/>
-            <RowConstraints percentHeight="4.16666666667"/>
-            <RowConstraints percentHeight="4.16666666667"/>
-            <RowConstraints percentHeight="4.16666666667"/>
-            <RowConstraints percentHeight="4.16666666667"/>
-            <RowConstraints percentHeight="4.16666666667"/>
-            <RowConstraints percentHeight="4.16666666667"/>
-            <RowConstraints percentHeight="4.16666666667"/>
-            <RowConstraints percentHeight="4.16666666667"/>
-            <RowConstraints percentHeight="4.16666666667"/>
-            <RowConstraints percentHeight="4.16666666667"/>
-            <RowConstraints percentHeight="4.16666666667"/>
-        </rowConstraints>
-        <!-- Labels pour les jours de la semaine -->
-        <Label text="Heure/Jour" GridPane.columnIndex="0" GridPane.rowIndex="0" style="-fx-border-color: black;"/>
-        <Label text="Lundi" GridPane.columnIndex="1" GridPane.rowIndex="0" style="-fx-border-color: black;"/>
-        <Label text="Mardi" GridPane.columnIndex="2" GridPane.rowIndex="0" style="-fx-border-color: black;"/>
-        <Label text="Mercredi" GridPane.columnIndex="3" GridPane.rowIndex="0" style="-fx-border-color: black;"/>
-        <Label text="Jeudi" GridPane.columnIndex="4" GridPane.rowIndex="0" style="-fx-border-color: black;"/>
-        <Label text="Vendredi" GridPane.columnIndex="5" GridPane.rowIndex="0" style="-fx-border-color: black;"/>
-        <!-- Les tranches horaires seront ajoutées dynamiquement dans le contrôleur -->
-
-    </GridPane>
-</VBox>
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.proto.Controller">
+    <top>
+        <!-- Insérez ici le contenu que vous souhaitez placer en haut de l'écran -->
+        <VBox spacing="10" alignment="CENTER">
+            <Button text="Semaine précédente" onAction="#previousWeekClicked"/>
+            <Button text="Semaine suivante" onAction="#nextWeekClicked"/>
+            <ComboBox fx:id="roomComboBoxSalle" promptText="Choisir une salle"/>
+            <ComboBox fx:id="roomComboBoxProfs" promptText="Choisir un prof"/>
+        </VBox>
+    </top>
+    <center>
+        <!-- Contenu central : votre grille de planning -->
+        <GridPane fx:id="scheduleGrid">
+            <!-- Ajoutez ici les éléments de votre grille -->
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
+            <columnConstraints>
+                <ColumnConstraints percentWidth="16.6666666667" hgrow="SOMETIMES" />
+                <ColumnConstraints percentWidth="16.6666666667" hgrow="SOMETIMES" />
+                <ColumnConstraints percentWidth="16.6666666667" hgrow="SOMETIMES" />
+                <ColumnConstraints percentWidth="16.6666666667" hgrow="SOMETIMES" />
+                <ColumnConstraints percentWidth="16.6666666667" hgrow="SOMETIMES" />
+                <ColumnConstraints percentWidth="16.6666666667" hgrow="SOMETIMES" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints percentHeight="4.16666666667"/>
+                <RowConstraints percentHeight="4.16666666667"/>
+                <RowConstraints percentHeight="4.16666666667"/>
+                <RowConstraints percentHeight="4.16666666667"/>
+                <RowConstraints percentHeight="4.16666666667"/>
+                <RowConstraints percentHeight="4.16666666667"/>
+                <RowConstraints percentHeight="4.16666666667"/>
+                <RowConstraints percentHeight="4.16666666667"/>
+                <RowConstraints percentHeight="4.16666666667"/>
+                <RowConstraints percentHeight="4.16666666667"/>
+                <RowConstraints percentHeight="4.16666666667"/>
+                <RowConstraints percentHeight="4.16666666667"/>
+                <RowConstraints percentHeight="4.16666666667"/>
+                <RowConstraints percentHeight="4.16666666667"/>
+                <RowConstraints percentHeight="4.16666666667"/>
+                <RowConstraints percentHeight="4.16666666667"/>
+                <RowConstraints percentHeight="4.16666666667"/>
+                <RowConstraints percentHeight="4.16666666667"/>
+                <RowConstraints percentHeight="4.16666666667"/>
+                <RowConstraints percentHeight="4.16666666667"/>
+                <RowConstraints percentHeight="4.16666666667"/>
+                <RowConstraints percentHeight="4.16666666667"/>
+                <RowConstraints percentHeight="4.16666666667"/>
+                <RowConstraints percentHeight="4.16666666667"/>
+            </rowConstraints>
+            <Label text="Heure/Jour" GridPane.columnIndex="0" GridPane.rowIndex="0" style="-fx-border-color: black;"/>
+            <Label text="Lundi" GridPane.columnIndex="1" GridPane.rowIndex="0" style="-fx-border-color: black;"/>
+            <Label text="Mardi" GridPane.columnIndex="2" GridPane.rowIndex="0" style="-fx-border-color: black;"/>
+            <Label text="Mercredi" GridPane.columnIndex="3" GridPane.rowIndex="0" style="-fx-border-color: black;"/>
+            <Label text="Jeudi" GridPane.columnIndex="4" GridPane.rowIndex="0" style="-fx-border-color: black;"/>
+            <Label text="Vendredi" GridPane.columnIndex="5" GridPane.rowIndex="0" style="-fx-border-color: black;"/>
+        </GridPane>
+    </center>
+</BorderPane>
