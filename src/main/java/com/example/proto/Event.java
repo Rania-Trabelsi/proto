@@ -2,8 +2,6 @@ package com.example.proto;
 
 import java.time.LocalDateTime;
 
-
-
 public class Event {
     private String subject;
     private String teacher;

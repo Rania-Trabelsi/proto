@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.*?>
+
+<GridPane fx:id="scheduleGrid"
+          xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="com.example.proto.Controller"
+          hgap="5" vgap="5">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+    <columnConstraints>
+        <ColumnConstraints minWidth="100" prefWidth="100" hgrow="SOMETIMES" />
+        <ColumnConstraints minWidth="200" prefWidth="200" hgrow="SOMETIMES" />
+        <ColumnConstraints minWidth="200" prefWidth="200" hgrow="SOMETIMES" />
+        <ColumnConstraints minWidth="200" prefWidth="200" hgrow="SOMETIMES" />
+        <ColumnConstraints minWidth="200" prefWidth="200" hgrow="SOMETIMES" />
+        <ColumnConstraints minWidth="200" prefWidth="200" hgrow="SOMETIMES" />
+    </columnConstraints>
+    <rowConstraints>
+        <!-- Générer dynamiquement les contraintes de ligne dans le contrôleur -->
+    </rowConstraints>
+    <!-- Labels pour les jours de la semaine -->
+    <Label text="Heure/Jour" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+    <Label text="Lundi" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+    <Label text="Mardi" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+    <Label text="Mercredi" GridPane.columnIndex="3" GridPane.rowIndex="0"/>
+    <Label text="Jeudi" GridPane.columnIndex="4" GridPane.rowIndex="0"/>
+    <Label text="Vendredi" GridPane.columnIndex="5" GridPane.rowIndex="0"/>
+    <!-- Les tranches horaires seront ajoutées dynamiquement dans le contrôleur -->
+</GridPane>
