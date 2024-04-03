@@ -2,12 +2,15 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.*?>
+
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.example.proto.Controller">
     <Button text="Semaine précédente" onAction="#previousWeekClicked"/>
     <Button text="Semaine suivante" onAction="#nextWeekClicked"/>
-    <GridPane fx:id="scheduleGrid"
-          hgap="5" vgap="5">
+    <ComboBox fx:id="roomComboBoxSalle" promptText="Choisir une salle"/>
+    <ComboBox fx:id="roomComboBoxProfs" promptText="Choisir un prof"/>
+
+    <GridPane fx:id="scheduleGrid">
         <padding>
             <Insets top="20" right="20" bottom="20" left="20"/>
         </padding>
@@ -46,12 +49,12 @@
             <RowConstraints percentHeight="4.16666666667"/>
         </rowConstraints>
         <!-- Labels pour les jours de la semaine -->
-        <Label text="Heure/Jour" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-        <Label text="Lundi" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
-        <Label text="Mardi" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
-        <Label text="Mercredi" GridPane.columnIndex="3" GridPane.rowIndex="0"/>
-        <Label text="Jeudi" GridPane.columnIndex="4" GridPane.rowIndex="0"/>
-        <Label text="Vendredi" GridPane.columnIndex="5" GridPane.rowIndex="0"/>
+        <Label text="Heure/Jour" GridPane.columnIndex="0" GridPane.rowIndex="0" style="-fx-border-color: black;"/>
+        <Label text="Lundi" GridPane.columnIndex="1" GridPane.rowIndex="0" style="-fx-border-color: black;"/>
+        <Label text="Mardi" GridPane.columnIndex="2" GridPane.rowIndex="0" style="-fx-border-color: black;"/>
+        <Label text="Mercredi" GridPane.columnIndex="3" GridPane.rowIndex="0" style="-fx-border-color: black;"/>
+        <Label text="Jeudi" GridPane.columnIndex="4" GridPane.rowIndex="0" style="-fx-border-color: black;"/>
+        <Label text="Vendredi" GridPane.columnIndex="5" GridPane.rowIndex="0" style="-fx-border-color: black;"/>
         <!-- Les tranches horaires seront ajoutées dynamiquement dans le contrôleur -->
 
     </GridPane>

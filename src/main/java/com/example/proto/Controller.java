@@ -2,6 +2,7 @@ package com.example.proto;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
@@ -11,11 +12,11 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 public class Controller {
+
+    boolean isDarkTheme = false;
 
     @FXML
     private Button previousWeekButton;
@@ -25,6 +26,7 @@ public class Controller {
 
     @FXML
     private GridPane scheduleGrid;
+
 
     LocalDate currentDate = LocalDate.now();
     private int actualWeek = currentDate.get(WeekFields.of(Locale.getDefault()).weekOfYear());
@@ -69,9 +71,71 @@ public class Controller {
         displayEventsOnGrid(events, actualWeek);
     }
 
+    @FXML
+    private ComboBox<String> roomComboBoxSalle;
+
+    @FXML
+    private ComboBox<String> roomComboBoxProfs;
+
+    public List<String> getAvailableRooms(){
+        Set<String> salles = new HashSet<>();
+        for (Event event : events) {
+            String room = event.getRoom();
+            if (room != null) {
+                if (room.contains(",")) {
+                    String[] splitRooms = room.split("\\\\,");
+                    for (String r : splitRooms) {
+                        if (!salles.contains(r.trim())){
+                            salles.add(r.trim());
+                        }
+                    }
+                } else if (!salles.contains(event.getRoom().trim())) {
+                    salles.add(event.getRoom().trim());
+                }
+            }
+        }
+        return new ArrayList<>(salles);
+    }
+
+    public List<String> getAvailableTeachers(){
+        Set<String> profs = new HashSet<>();
+        for (Event event : events){
+            String teacher = event.getTeacher();
+            if(teacher!=null){
+                if(teacher.contains(",")){
+                    String[] professeurs = teacher.split("\\\\,");
+                    for (String p : professeurs){
+                        if (!profs.contains(p.trim())){
+                            profs.add(p.trim());
+                        }
+                    }
+                }
+                else if (!profs.contains(teacher.trim())){
+                    profs.add(teacher.trim());
+                }
+            }
+        }
+        return new ArrayList<>(profs);
+    }
+
     public void initialize() {
         generateTimeSlots();
         generateWeekDays(actualWeek);
+        List<String> availableRooms = getAvailableRooms();
+        List<String> availableTeacher = getAvailableTeachers();
+        roomComboBoxSalle.getItems().addAll(availableRooms);
+        roomComboBoxProfs.getItems().addAll(availableTeacher);
+        roomComboBoxSalle.setOnAction(event -> {
+            String selectedRoom = roomComboBoxSalle.getValue();
+            List<Event> filteredEvents = filterEventsByRoom(events, selectedRoom);
+            displayEventsOnGrid(filteredEvents, actualWeek);
+        });
+
+        roomComboBoxProfs.setOnAction(event -> {
+            String selectedTeacher = roomComboBoxProfs.getValue();
+            List<Event> filteredEvents = filterEventsByTeacher(events, selectedTeacher);
+            displayEventsOnGrid(filteredEvents, actualWeek);
+        });
 
         displayEventsOnGrid(events, actualWeek);
     }
@@ -114,6 +178,29 @@ public class Controller {
             }
         }
     }
+
+    private List<Event> filterEventsByRoom(List<Event> events, String room) {
+        List<Event> filteredEvents = new ArrayList<>();
+        for (Event event : events) {
+            String eventRoom = event.getRoom();
+            if (eventRoom != null && eventRoom.equals(room)) {
+                filteredEvents.add(event);
+            }
+        }
+        return filteredEvents;
+    }
+
+
+    private List<Event> filterEventsByTeacher(List<Event> events, String teacher) {
+        List<Event> filteredEvents = new ArrayList<>();
+        for (Event event : events) {
+            if (event.getTeacher()!=null && event.getTeacher().equals(teacher)) {
+                filteredEvents.add(event);
+            }
+        }
+        return filteredEvents;
+    }
+
 
     private List<Event> filterEventsByWeek(List<Event> events, int weekNumber) {
         List<Event> eventsForWeek = new ArrayList<>();
