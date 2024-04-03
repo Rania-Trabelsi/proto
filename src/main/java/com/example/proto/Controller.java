@@ -1,16 +1,15 @@
 package com.example.proto;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +18,30 @@ import java.util.Locale;
 public class Controller {
 
     @FXML
+    private Button previousWeekButton;
+
+    @FXML
+    private Button nextWeekButton;
+
+    @FXML
     private GridPane scheduleGrid;
+
+    LocalDate currentDate = LocalDate.now();
+    private int actualWeek = currentDate.get(WeekFields.of(Locale.getDefault()).weekOfYear());
+
+    private void increaseWeek(){
+        actualWeek++;
+        if(actualWeek==53){
+            actualWeek = 1;
+        }
+    }
+
+    private void decreaseWeek(){
+        actualWeek--;
+        if(actualWeek==0){
+            actualWeek=52;
+        }
+    }
 
 
     String urlString = "https://edt-api.univ-avignon.fr/api/exportAgenda/tdoption/def502009db4cc18c89d1c0f782ad7" +
@@ -35,48 +57,61 @@ public class Controller {
         }
     }
 
+    @FXML
+    private void previousWeekClicked() {
+        decreaseWeek();
+        displayEventsOnGrid(events, actualWeek);
+    }
+
+    @FXML
+    private void nextWeekClicked() {
+        increaseWeek();
+        displayEventsOnGrid(events, actualWeek);
+    }
+
     public void initialize() {
         generateTimeSlots();
-        generateWeekDays();
+        generateWeekDays(actualWeek);
 
-        LocalDate currentDate = LocalDate.now();
-        int weekNumber = currentDate.get(WeekFields.of(Locale.getDefault()).weekOfYear());
-
-        displayEventsOnGrid(events, weekNumber);
+        displayEventsOnGrid(events, actualWeek);
     }
 
     public void displayEventsOnGrid(List<Event> events, int weekNumber) {
         scheduleGrid.getChildren().clear();
         generateTimeSlots();
-        generateWeekDays();
+        generateWeekDays(actualWeek);
 
         List<Event> eventsForWeek = filterEventsByWeek(events, weekNumber);
 
         for (Event event : eventsForWeek) {
-            VBox eventLabels = new VBox();
+            if(event.getSubject() != null) {
+                VBox eventLabels = new VBox();
 
-            Label eventSubject = new Label(event.getSubject());
-            Label eventTeacher = new Label(event.getTeacher());
-            Label eventRoom = new Label(event.getRoom());
-            Label eventType = new Label(event.getType());
-            Label eventGroup = new Label(event.getGroup());
+                Label eventSubject = new Label(event.getSubject());
+                Label eventTeacher = new Label(event.getTeacher());
+                Label eventRoom = new Label(event.getRoom());
+                Label eventType = new Label(event.getType());
+                Label eventGroup = new Label(event.getGroup());
 
-            eventLabels.getChildren().addAll(eventSubject, eventTeacher, eventRoom, eventType, eventGroup);
+                eventLabels.getChildren().addAll(eventSubject, eventTeacher, eventRoom, eventType, eventGroup);
+                eventLabels.setStyle("-fx-border-color: black; -fx-border-width: 1px;");
 
-            LocalTime baseTime = LocalTime.of(8, 30);
-            long minutesSinceBaseTime = Duration.between(baseTime, event.getStartDateTime().toLocalTime()).toMinutes();
+                LocalTime baseTime = LocalTime.of(6, 30);
+                long minutesSinceBaseTime = Duration.between(baseTime, event.getStartDateTime().toLocalTime()).toMinutes();
+                System.out.println(minutesSinceBaseTime);
+                int startRow;
+                if (minutesSinceBaseTime >= 0) {
+                    startRow = (int) (minutesSinceBaseTime / 30);
+                } else {
+                    startRow = 0;
+                }
+                System.out.println(startRow);
 
-            int startRow;
-            if (minutesSinceBaseTime >= 0) {
-                startRow = (int) (minutesSinceBaseTime / 30);
-            } else {
-                startRow = 0;
+                int dayColumn = event.getStartDateTime().getDayOfWeek().getValue();
+                long duration = java.time.Duration.between(event.getStartDateTime(), event.getEndDateTime()).toMinutes() / 30;
+
+                scheduleGrid.add(eventLabels, dayColumn, startRow + 1, 1, (int) duration);
             }
-
-            int dayColumn = event.getStartDateTime().getDayOfWeek().getValue();
-            long duration = java.time.Duration.between(event.getStartDateTime(), event.getEndDateTime()).toMinutes() / 30;
-
-            scheduleGrid.add(eventLabels, dayColumn, startRow+1, 1, (int) duration);
         }
     }
 
@@ -99,16 +134,20 @@ public class Controller {
         }
     }
 
-    private void generateWeekDays() {
+    private void generateWeekDays(int actualWeek) {
+
         LocalDate currentDate = LocalDate.now();
-        int currentDayOfWeek = currentDate.getDayOfWeek().getValue();
+        int a = currentDate.get(WeekFields.of(Locale.getDefault()).weekOfYear());
+        int diff = actualWeek - a;
+        LocalDate firstDayOfWeek = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).plusWeeks(diff);
+
 
         for (int i = 0; i < 5; i++) {
-            LocalDate date = currentDate.plusDays(i - currentDayOfWeek + 1);
+            LocalDate day = firstDayOfWeek.plusDays(i);
 
-            String formattedDate = date.format(DateTimeFormatter.ofPattern("dd/MM"));
+            String formattedDate = day.format(DateTimeFormatter.ofPattern("dd/MM"));
 
-            Label dayLabel = new Label(date.getDayOfWeek().toString().substring(0, 3) + " " + formattedDate);
+            Label dayLabel = new Label(day.getDayOfWeek().toString().substring(0, 4) + " " + formattedDate);
 
             scheduleGrid.add(dayLabel, i + 1, 0);
         }

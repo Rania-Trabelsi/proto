@@ -17,7 +17,7 @@ public class MainApp extends Application {
         primaryStage.setTitle("Emploi du Temps");
 
         // Définir la scène
-        primaryStage.setScene(new Scene(root));
+        primaryStage.setScene(new Scene(root, 800, 600));
 
         // Afficher la fenêtre
         primaryStage.show();
