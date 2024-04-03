@@ -8,19 +8,28 @@ import javafx.stage.Stage;
 
 public class MainApp extends Application {
 
+    private Scene scene;
+
     @Override
     public void start(Stage primaryStage) throws Exception {
-        // Charger le fichier FXML
         Parent root = FXMLLoader.load(getClass().getResource("/main.fxml"));
 
-        // Définir le titre de la fenêtre
+        scene = new Scene(root, 800, 600);
+        applyLightTheme(); // Appliquer le thème clair par défaut
+
         primaryStage.setTitle("Emploi du Temps");
-
-        // Définir la scène
-        primaryStage.setScene(new Scene(root, 800, 600));
-
-        // Afficher la fenêtre
+        primaryStage.setScene(scene);
         primaryStage.show();
+    }
+
+    public void applyDarkTheme() {
+        scene.getStylesheets().clear();
+        scene.getStylesheets().add(getClass().getResource("/dark-theme.css").toExternalForm());
+    }
+
+    public void applyLightTheme() {
+        scene.getStylesheets().clear();
+        scene.getStylesheets().add(getClass().getResource("/light-theme.css").toExternalForm());
     }
 
     public static void main(String[] args) {
