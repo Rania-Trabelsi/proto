@@ -7,21 +7,21 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class MainApp extends Application {
-
     private Scene scene;
-
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("/main.fxml"));
+        // Charger le fichier FXML pour l'authentification
+        Parent root = FXMLLoader.load(getClass().getResource("/LoginView.fxml")); // Assurez-vous que le chemin est correct
 
-        scene = new Scene(root, 800, 600);
-        applyLightTheme(); // Appliquer le thème clair par défaut
+        // Définir le titre de la fenêtre
+        primaryStage.setTitle("Connexion");
 
-        primaryStage.setTitle("Emploi du Temps");
-        primaryStage.setScene(scene);
+        // Définir la scène avec une taille appropriée pour la fenêtre de connexion
+        primaryStage.setScene(new Scene(root, 600, 600)); // Ajustez la taille selon vos besoins
+
+        // Afficher la fenêtre
         primaryStage.show();
     }
-
     public void applyDarkTheme() {
         scene.getStylesheets().clear();
         scene.getStylesheets().add(getClass().getResource("/dark-theme.css").toExternalForm());
