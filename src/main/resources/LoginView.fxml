@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<AnchorPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.proto.LoginController" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #2c3e50;">
+    <VBox spacing="20" alignment="CENTER" layoutX="150" layoutY="100" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 30;">
+        <GridPane hgap="10" vgap="15">
+            <Label text="Nom d'utilisateur:" GridPane.columnIndex="0" GridPane.rowIndex="0" style="-fx-text-fill: black;"/>
+            <TextField fx:id="usernameField" GridPane.columnIndex="1" GridPane.rowIndex="0" prefWidth="200"/>
+            <Label text="Mot de passe:" GridPane.columnIndex="0" GridPane.rowIndex="1" style="-fx-text-fill: black;"/>
+            <PasswordField fx:id="passwordField" GridPane.columnIndex="1" GridPane.rowIndex="1" prefWidth="200"/>
+        </GridPane>
+        <Button text="Se connecter" onAction="#login" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 5;"/>
+    </VBox>
+</AnchorPane>
