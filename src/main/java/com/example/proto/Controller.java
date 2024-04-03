@@ -232,29 +232,32 @@ public class Controller {
         int rowIndex = 1; // Commence à 1 pour laisser l'en-tête
         for (LocalTime time = LocalTime.of(8, 30); !time.isAfter(LocalTime.of(19, 0)); time = time.plusMinutes(30)) {
             Label timeLabel = new Label(time.toString());
+            // Appliquer le style ici
+            timeLabel.setStyle("-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-padding: 5; -fx-alignment: center;");
+            timeLabel.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE); // S'étend pour remplir la cellule
             scheduleGrid.add(timeLabel, 0, rowIndex);
             rowIndex++;
         }
     }
 
-    private void generateWeekDays(int actualWeek) {
 
+    private void generateWeekDays(int actualWeek) {
         LocalDate currentDate = LocalDate.now();
         int a = currentDate.get(WeekFields.of(Locale.getDefault()).weekOfYear());
         int diff = actualWeek - a;
-        LocalDate firstDayOfWeek = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).plusWeeks(diff);
-
+        LocalDate firstDayOfWeek = currentDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).plusWeeks(diff);
 
         for (int i = 0; i < 5; i++) {
             LocalDate day = firstDayOfWeek.plusDays(i);
-
             String formattedDate = day.format(DateTimeFormatter.ofPattern("dd/MM"));
-
-            Label dayLabel = new Label(day.getDayOfWeek().toString().substring(0, 4) + " " + formattedDate);
-
+            Label dayLabel = new Label(day.getDayOfWeek().toString().substring(0, 3) + " " + formattedDate);
+            // Appliquer un style différent pour chaque jour
+            dayLabel.setStyle("-fx-background-color: #3498db; -fx-text-fill: white; -fx-padding: 5; -fx-alignment: center;");
+            dayLabel.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE); // S'étend pour remplir la cellule
             scheduleGrid.add(dayLabel, i + 1, 0);
         }
     }
+
 
 
 }
