@@ -8,6 +8,7 @@ import javafx.stage.Stage;
 
 public class MainApp extends Application {
     private Scene scene;
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         // Charger le fichier FXML pour l'authentification
