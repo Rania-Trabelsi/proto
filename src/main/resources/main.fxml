@@ -4,13 +4,17 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.ScrollPane?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.example.proto.Controller">
+<?import java.net.URL?>
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.proto.Controller">
+    <stylesheets>
+        <URL value="@style.css" />
+    </stylesheets>
     <top>
         <!-- Insérez ici le contenu que vous souhaitez placer en haut de l'écran -->
         <HBox spacing="10" alignment="CENTER" style="-fx-padding: 10 0 0 0;">
             <Button text="Semaine précédente" onAction="#previousWeekClicked"/>
-            <Button text="Semaine suivante" onAction="#nextWeekClicked"/>
+            <Button text="Semaine suivante" onAction="#nextWeekClicked" />
+
             <Button fx:id="themeToggleButton" text="Changer de thème" onAction="#toggleTheme"/>
             <ComboBox fx:id="urlComboBox" promptText="Choisir une URL"/>
             <ComboBox fx:id="roomComboBoxSalle" promptText="Choisir une salle"/>
