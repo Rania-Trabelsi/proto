@@ -7,13 +7,20 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import java.awt.Desktop;
+import java.net.URI;
+import javafx.scene.control.Hyperlink;
 
 import java.io.IOException;
+import java.net.URI;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
 import java.util.*;
+import java.awt.Desktop;
+
+
 
 public class Controller {
 
@@ -35,7 +42,29 @@ public class Controller {
         urlMap.put("M1 IA", "https://edt-api.univ-avignon.fr/api/exportAgenda/tdoption/def502009db4cc18c89d1c0f782ad7dc1b2317d1b866e9b368292e2a5046d898d796146e873142f21aff63fbf54104ed9d2841c2377ab77f27c8d24d53d7999c5a3d55a76fdf89c9c4c6e4f1041c98d55a078b4c84cd3987d1e3264a45");
         urlMap.put("M1 ILSEN", "https://edt-api.univ-avignon.fr/api/exportAgenda/tdoption/def50200bc1f36a37bd475bc8fe158abe74b5a7ac3f73d2f7192761070a77649117f8ec9b8a0cbe322525ef7da04a70dc813c4d1145e73e207068651f294714a90f6b3d87b56c1e40f5b1cd00b5b9441f00702a1d2508e7db992473cbeb551dc7abce432981f40");
     }
-    
+    private void sendEmailToTeacher(String teacherEmail) {
+        try {
+            // Préparer l'URI mailto avec l'adresse de l'enseignant
+            URI mailto = new URI("mailto:" + teacherEmail + "?subject=Question%20concernant%20le%20cours");
+            // Lancer le client de messagerie par défaut avec l'adresse de l'enseignant pré-remplie
+            java.awt.Desktop.getDesktop().mail(mailto);
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Ici, vous pourriez afficher une erreur à l'utilisateur si l'opération échoue
+        }
+    }
+    private Map<String, String> teacherEmails = new HashMap<>();
+
+// Ajoutez d'autres enseignants ici
+
+
+
+
+
+
+
+
+
 
     LocalDate currentDate = LocalDate.now();
     private int actualWeek = currentDate.get(WeekFields.of(Locale.getDefault()).weekOfYear());
@@ -121,6 +150,10 @@ public class Controller {
     @FXML
     private ComboBox<String> urlComboBox;
 
+
+
+
+
     public List<String> getAvailableTeachers(){
         Set<String> profs = new HashSet<>();
         for (Event event : events){
@@ -170,6 +203,18 @@ public class Controller {
             List<Event> filteredEvents = filterEventsByTeacher(events, selectedTeacher);
             displayEventsOnGrid(filteredEvents, actualWeek);
         });
+        roomComboBoxProfs.setOnAction(event -> {
+            String selectedTeacher = roomComboBoxProfs.getValue();
+            // Vérifier si l'adresse e-mail de l'enseignant est connue
+            teacherEmails.put("LILIAN RONDIN", "email@exemple.com");
+            String email = teacherEmails.get(selectedTeacher);
+            if(email != null) {
+                sendEmailToTeacher(email);
+            } else {
+                // Gérer le cas où l'adresse e-mail n'est pas trouvée (optionnel)
+            }
+        });
+
 
         displayEventsOnGrid(events, actualWeek);
 
@@ -201,11 +246,28 @@ public class Controller {
         List<Event> eventsForWeek = filterEventsByWeek(events, weekNumber);
 
         for (Event event : eventsForWeek) {
-            if(event.getSubject() != null) {
+            if (event.getSubject() != null) {
                 VBox eventLabels = new VBox();
 
                 Label eventSubject = new Label(event.getSubject());
-                Label eventTeacher = new Label(event.getTeacher());
+
+                // Remplacez le Label par un Hyperlink pour le nom de l'enseignant
+                Hyperlink eventTeacher = new Hyperlink(event.getTeacher());
+                eventTeacher.setOnAction(e -> {
+                    // Remplacez "votreEmail@exemple.com" par l'adresse e-mail récupérée
+                    // à partir d'une structure de données mappant les noms des enseignants à leurs e-mails
+                    String email = "votreEmail@exemple.com"; // Obtenez l'e-mail réel ici
+                    try {
+                        // Préparez l'URI mailto avec l'adresse de l'enseignant
+                        URI mailto = new URI("mailto:" + email + "?subject=Question%20sur%20le%20cours");
+                        // Lancez le client de messagerie par défaut
+                        Desktop.getDesktop().mail(mailto);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        // Gérez l'erreur (par exemple, affichez une alerte indiquant que l'opération a échoué)
+                    }
+                });
+
                 Label eventRoom = new Label(event.getRoom());
                 Label eventType = new Label(event.getType());
                 Label eventGroup = new Label(event.getGroup());
@@ -215,14 +277,7 @@ public class Controller {
 
                 LocalTime baseTime = LocalTime.of(6, 30);
                 long minutesSinceBaseTime = Duration.between(baseTime, event.getStartDateTime().toLocalTime()).toMinutes();
-                System.out.println(minutesSinceBaseTime);
-                int startRow;
-                if (minutesSinceBaseTime >= 0) {
-                    startRow = (int) (minutesSinceBaseTime / 30);
-                } else {
-                    startRow = 0;
-                }
-                System.out.println(startRow);
+                int startRow = (minutesSinceBaseTime >= 0) ? (int) (minutesSinceBaseTime / 30) : 0;
 
                 int dayColumn = event.getStartDateTime().getDayOfWeek().getValue();
                 long duration = java.time.Duration.between(event.getStartDateTime(), event.getEndDateTime()).toMinutes() / 30;
@@ -231,6 +286,7 @@ public class Controller {
             }
         }
     }
+
 
     private List<Event> filterEventsByRoom(List<Event> events, String room) {
         List<Event> filteredEvents = new ArrayList<>();
