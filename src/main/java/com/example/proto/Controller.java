@@ -1,5 +1,6 @@
 package com.example.proto;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -18,13 +19,29 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
 import java.util.*;
-import java.awt.Desktop;
 
 
 
 public class Controller {
 
+    private String urlString = "https://edt-api.univ-avignon.fr/api/exportAgenda/tdoption/def502009db4cc18c89d1c0f782ad7" +
+            "dc1b2317d1b866e9b368292e2a5046d898d796146e873142f21aff63fbf54104ed9d2841c2377ab77f27c8d24d53d7999c5a3d" +
+            "55a76fdf89c9c4c6e4f1041c98d55a078b4c84cd3987d1e3264a45";
+
     private Map<String, String> urlMap = new LinkedHashMap<>(); // Utilisez LinkedHashMap pour conserver l'ordre
+    private Map<String, String> teacherEmails = new HashMap<>();
+    private int actualWeek = LocalDate.now().get(WeekFields.of(Locale.getDefault()).weekOfYear());
+    private String selectedUrl; // URL sélectionnée
+    private List<Event> events;
+    {
+        try {
+            events = IcsParser.parseIcsFileFromUrl(urlString);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String selectedRoom = null, selectedTeacher = null;
 
     @FXML
     private Button themeToggleButton; // Bouton pour basculer le thème
@@ -36,12 +53,25 @@ public class Controller {
     private Button nextWeekButton;
 
     @FXML
+    private Button reinitialize;
+
+    @FXML
     private GridPane scheduleGrid;
+
+    @FXML
+    private ComboBox<String> roomComboBoxSalle;
+
+    @FXML
+    private ComboBox<String> roomComboBoxProfs;
+
+    @FXML
+    private ComboBox<String> urlComboBox;
 
     public Controller() {
         urlMap.put("M1 IA", "https://edt-api.univ-avignon.fr/api/exportAgenda/tdoption/def502009db4cc18c89d1c0f782ad7dc1b2317d1b866e9b368292e2a5046d898d796146e873142f21aff63fbf54104ed9d2841c2377ab77f27c8d24d53d7999c5a3d55a76fdf89c9c4c6e4f1041c98d55a078b4c84cd3987d1e3264a45");
         urlMap.put("M1 ILSEN", "https://edt-api.univ-avignon.fr/api/exportAgenda/tdoption/def50200bc1f36a37bd475bc8fe158abe74b5a7ac3f73d2f7192761070a77649117f8ec9b8a0cbe322525ef7da04a70dc813c4d1145e73e207068651f294714a90f6b3d87b56c1e40f5b1cd00b5b9441f00702a1d2508e7db992473cbeb551dc7abce432981f40");
     }
+
     private void sendEmailToTeacher(String teacherEmail) {
         try {
             // Préparer l'URI mailto avec l'adresse de l'enseignant
@@ -53,7 +83,7 @@ public class Controller {
             // Ici, vous pourriez afficher une erreur à l'utilisateur si l'opération échoue
         }
     }
-    private Map<String, String> teacherEmails = new HashMap<>();
+
 
 // Ajoutez d'autres enseignants ici
 
@@ -63,11 +93,6 @@ public class Controller {
 
 
 
-
-
-
-    LocalDate currentDate = LocalDate.now();
-    private int actualWeek = currentDate.get(WeekFields.of(Locale.getDefault()).weekOfYear());
 
     private void increaseWeek(){
         actualWeek++;
@@ -97,18 +122,9 @@ public class Controller {
             isDarkTheme = true;
         }
     }
-    String urlString = "https://edt-api.univ-avignon.fr/api/exportAgenda/tdoption/def502009db4cc18c89d1c0f782ad7" +
-            "dc1b2317d1b866e9b368292e2a5046d898d796146e873142f21aff63fbf54104ed9d2841c2377ab77f27c8d24d53d7999c5a3d" +
-            "55a76fdf89c9c4c6e4f1041c98d55a078b4c84cd3987d1e3264a45";
 
-    private List<Event> events;
-    {
-        try {
-            events = IcsParser.parseIcsFileFromUrl(urlString);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+
+
 
     @FXML
     private void previousWeekClicked() {
@@ -122,11 +138,7 @@ public class Controller {
         displayEventsOnGrid(events, actualWeek);
     }
 
-    @FXML
-    private ComboBox<String> roomComboBoxSalle;
 
-    @FXML
-    private ComboBox<String> roomComboBoxProfs;
 
     public List<String> getAvailableRooms(){
         Set<String> salles = new HashSet<>();
@@ -147,11 +159,6 @@ public class Controller {
         }
         return new ArrayList<>(salles);
     }
-    @FXML
-    private ComboBox<String> urlComboBox;
-
-
-
 
 
     public List<String> getAvailableTeachers(){
@@ -174,7 +181,9 @@ public class Controller {
         }
         return new ArrayList<>(profs);
     }
-    private String selectedUrl; // URL sélectionnée
+
+
+
     private void loadEventsFromSelectedUrl() {
         try {
             events = IcsParser.parseIcsFileFromUrl(selectedUrl);
@@ -192,20 +201,18 @@ public class Controller {
         List<String> availableTeachers = getAvailableTeachers();
         roomComboBoxSalle.getItems().addAll(availableRooms);
         roomComboBoxProfs.getItems().addAll(availableTeachers);
+
         roomComboBoxSalle.setOnAction(event -> {
-            String selectedRoom = roomComboBoxSalle.getValue();
+            selectedRoom = roomComboBoxSalle.getValue();
             List<Event> filteredEvents = filterEventsByRoom(events, selectedRoom);
             displayEventsOnGrid(filteredEvents, actualWeek);
         });
 
         roomComboBoxProfs.setOnAction(event -> {
-            String selectedTeacher = roomComboBoxProfs.getValue();
+            selectedTeacher = roomComboBoxProfs.getValue();
             List<Event> filteredEvents = filterEventsByTeacher(events, selectedTeacher);
             displayEventsOnGrid(filteredEvents, actualWeek);
-        });
-        roomComboBoxProfs.setOnAction(event -> {
-            String selectedTeacher = roomComboBoxProfs.getValue();
-            // Vérifier si l'adresse e-mail de l'enseignant est connue
+
             teacherEmails.put("LILIAN RONDIN", "email@exemple.com");
             String email = teacherEmails.get(selectedTeacher);
             if(email != null) {
@@ -214,7 +221,6 @@ public class Controller {
                 // Gérer le cas où l'adresse e-mail n'est pas trouvée (optionnel)
             }
         });
-
 
         displayEventsOnGrid(events, actualWeek);
 
@@ -237,13 +243,36 @@ public class Controller {
         }
     }
 
+    @FXML
+    public void reinitialize() {
+        generateTimeSlots();
+        generateWeekDays(actualWeek);
+        selectedTeacher = null;
+        selectedRoom = null;
+        displayEventsOnGrid(events, actualWeek);
+    }
+
 
     public void displayEventsOnGrid(List<Event> events, int weekNumber) {
         scheduleGrid.getChildren().clear();
         generateTimeSlots();
         generateWeekDays(actualWeek);
+        List<Event> actualEvents = new ArrayList<>();
+        if(selectedRoom != null){
+            List<Event> roomEvents = filterEventsByRoom(events, selectedRoom);
+            for (Event event : roomEvents){
+                actualEvents.add(event);
+            }
+        }
+        if(selectedTeacher != null){
+            List<Event> teacherEvents = filterEventsByTeacher(events, selectedTeacher);
+            for (Event event : teacherEvents){
+                actualEvents.add(event);
+            }
+        }
+        if(actualEvents.isEmpty()){actualEvents = events;}
 
-        List<Event> eventsForWeek = filterEventsByWeek(events, weekNumber);
+        List<Event> eventsForWeek = filterEventsByWeek(actualEvents, weekNumber);
 
         for (Event event : eventsForWeek) {
             if (event.getSubject() != null) {
@@ -291,8 +320,7 @@ public class Controller {
     private List<Event> filterEventsByRoom(List<Event> events, String room) {
         List<Event> filteredEvents = new ArrayList<>();
         for (Event event : events) {
-            String eventRoom = event.getRoom();
-            if (eventRoom != null && eventRoom.equals(room)) {
+            if (event.getRoom() != null && event.getRoom().equals(room)) {
                 filteredEvents.add(event);
             }
         }
@@ -350,7 +378,5 @@ public class Controller {
             scheduleGrid.add(dayLabel, i + 1, 0);
         }
     }
-
-
 
 }

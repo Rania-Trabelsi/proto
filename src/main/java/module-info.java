@@ -8,6 +8,7 @@ module com.example.proto {
     requires net.synedra.validatorfx;
     requires org.kordamp.ikonli.javafx;
     requires org.kordamp.bootstrapfx.core;
+    requires java.desktop;
 
     requires com.almasb.fxgl.all;
 
