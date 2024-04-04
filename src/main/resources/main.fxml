@@ -12,6 +12,7 @@
             <Button text="Semaine précédente" onAction="#previousWeekClicked"/>
             <Button text="Semaine suivante" onAction="#nextWeekClicked"/>
             <Button fx:id="themeToggleButton" text="Changer de thème" onAction="#toggleTheme"/>
+            <ComboBox fx:id="urlComboBox" promptText="Choisir une URL"/>
 
             <ComboBox fx:id="roomComboBoxSalle" promptText="Choisir une salle"/>
             <ComboBox fx:id="roomComboBoxProfs" promptText="Choisir un prof"/>
