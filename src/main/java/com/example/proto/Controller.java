@@ -16,6 +16,7 @@ import java.time.temporal.WeekFields;
 import java.util.*;
 
 public class Controller {
+    private Map<String, String> urlMap = new LinkedHashMap<>(); // Utilisez LinkedHashMap pour conserver l'ordre
 
 
     @FXML
@@ -62,14 +63,29 @@ public class Controller {
             isDarkTheme = true;
         }
     }
-    String urlString = "https://edt-api.univ-avignon.fr/api/exportAgenda/tdoption/def502009db4cc18c89d1c0f782ad7" +
-            "dc1b2317d1b866e9b368292e2a5046d898d796146e873142f21aff63fbf54104ed9d2841c2377ab77f27c8d24d53d7999c5a3d" +
-            "55a76fdf89c9c4c6e4f1041c98d55a078b4c84cd3987d1e3264a45";
+    @FXML
+    private ComboBox<String> urlComboBox; // ComboBox pour sélectionner l'URL
+
+    private List<String> urls = new ArrayList<>(); // Liste pour stocker les URLs
+    private String selectedUrl; // URL sélectionnée
 
     private List<Event> events;
-    {
+
+    public Controller() {
+        // Ajouter les URLs dans la liste
+        urlMap.put("M1 IA", "https://edt-api.univ-avignon.fr/api/exportAgenda/tdoption/def502009db4cc18c89d1c0f782ad7dc1b2317d1b866e9b368292e2a5046d898d796146e873142f21aff63fbf54104ed9d2841c2377ab77f27c8d24d53d7999c5a3d55a76fdf89c9c4c6e4f1041c98d55a078b4c84cd3987d1e3264a45");
+        urlMap.put("M1 ILSEN", "https://edt-api.univ-avignon.fr/api/exportAgenda/tdoption/def50200bc1f36a37bd475bc8fe158abe74b5a7ac3f73d2f7192761070a77649117f8ec9b8a0cbe322525ef7da04a70dc813c4d1145e73e207068651f294714a90f6b3d87b56c1e40f5b1cd00b5b9441f00702a1d2508e7db992473cbeb551dc7abce432981f40");
+    }
+
+
+
+
+
+    private void loadEventsFromSelectedUrl() {
         try {
-            events = IcsParser.parseIcsFileFromUrl(urlString);
+            events = IcsParser.parseIcsFileFromUrl(selectedUrl);
+            // Appliquer toute logique supplémentaire nécessaire après le chargement des événements
+            displayEventsOnGrid(events, actualWeek);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -135,26 +151,29 @@ public class Controller {
     }
 
     public void initialize() {
-        generateTimeSlots();
-        generateWeekDays(actualWeek);
-        List<String> availableRooms = getAvailableRooms();
-        List<String> availableTeacher = getAvailableTeachers();
-        roomComboBoxSalle.getItems().addAll(availableRooms);
-        roomComboBoxProfs.getItems().addAll(availableTeacher);
-        roomComboBoxSalle.setOnAction(event -> {
-            String selectedRoom = roomComboBoxSalle.getValue();
-            List<Event> filteredEvents = filterEventsByRoom(events, selectedRoom);
-            displayEventsOnGrid(filteredEvents, actualWeek);
+        // Ajouter les noms dans le ComboBox
+        urlComboBox.getItems().addAll(urlMap.keySet());
+
+        // Configurer le gestionnaire d'action pour charger les événements en fonction de l'URL sélectionnée
+        urlComboBox.setOnAction(event -> {
+            String selectedName = urlComboBox.getValue();
+            selectedUrl = urlMap.get(selectedName);
+            loadEventsFromSelectedUrl();
         });
 
-        roomComboBoxProfs.setOnAction(event -> {
-            String selectedTeacher = roomComboBoxProfs.getValue();
-            List<Event> filteredEvents = filterEventsByTeacher(events, selectedTeacher);
-            displayEventsOnGrid(filteredEvents, actualWeek);
-        });
-
-        displayEventsOnGrid(events, actualWeek);
+        // Charger les événements pour l'entrée par défaut, si nécessaire
+        if (!urlMap.isEmpty()) {
+            String firstKey = urlMap.keySet().iterator().next();
+            urlComboBox.getSelectionModel().select(firstKey);
+            selectedUrl = urlMap.get(firstKey);
+            loadEventsFromSelectedUrl();
+        }
     }
+
+
+
+
+
 
     public void displayEventsOnGrid(List<Event> events, int weekNumber) {
         scheduleGrid.getChildren().clear();
